@@ -10,8 +10,8 @@ const ToDo = ({todo}) => {
                 ({todo.category})
               </p>
               <div>
-                <button>Completar</button>
-                <button>Deletar</button>
+                <button className='complete'>Completar</button>
+                <button className='remove'>x</button>
               </div>
             </div>
           </div>

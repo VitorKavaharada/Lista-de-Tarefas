@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import Todo from './components/ToDo'
+import TodoForm from './components/TodoForm'
 import './App.css'
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
             <Todo todo={todo}/>
         ))}
       </div>
+      <TodoForm/>
     </div>
   )
 }
