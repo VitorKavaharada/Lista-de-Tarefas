@@ -1,3 +1,4 @@
+import './Filter.css';
 const Filter = ({filter, setFilter,setSort}) => {
   return (
     <div className="filter">
@@ -8,7 +9,7 @@ const Filter = ({filter, setFilter,setSort}) => {
                 <select value={filter} onChange={(e)=>setFilter(e.target.value)}>
                     <option value="All">Todas</option>
                     <option value="Completed">Completas</option>
-                    <option value="Imcomplete">Imcompletas</option>
+                    <option value="Imcomplete">Incompletas</option>
                 </select>
             </div>
             <div>

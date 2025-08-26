@@ -1,3 +1,4 @@
+import './ToDo.css';
 import React from 'react'
 
 const ToDo = ({todo, removeTodo, completeTodo}) => {
@@ -11,7 +12,7 @@ const ToDo = ({todo, removeTodo, completeTodo}) => {
               </p>
               <div>
                 <button className='complete' onClick={()=>completeTodo(todo.id)}>Completar</button>
-                <button className='remove'onClick={()=>removeTodo(todo.id)}>x</button>
+                <button className='remove'onClick={()=>removeTodo(todo.id)}>Excluir</button>
               </div>
             </div>
           </div>
