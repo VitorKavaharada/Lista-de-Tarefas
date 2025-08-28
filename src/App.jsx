@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; // Adicione useEffect aqui
+import { useState, useEffect } from 'react';
 
 import Todo from './components/ToDo';
 import TodoForm from './components/TodoForm';
@@ -6,75 +6,84 @@ import Search from './components/Search';
 import Filter from './components/Filter';
 import './App.css';
 
-import initialTodos from './/data/tarefas.json'; // Importe o JSON inicial aqui
+const API_URL = 'http://localhost:3001/tarefas'; // URL da API (mude para produção se hospedar)
 
 function App() {
-  // Inicialize o estado com um array vazio. Vamos carregar do localStorage depois.
   const [todos, setTodos] = useState([]);
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [sort, setSort] = useState("Asc");
 
-  // useEffect para CARREGAR as tarefas do localStorage quando o app inicia
+  // Carregar tarefas da API ao iniciar
   useEffect(() => {
-    const storedTodos = localStorage.getItem('todos'); // Pega o item 'todos' do localStorage
-    if (storedTodos) {
-      // Se existir, converte de JSON para array e atualiza o estado
-      setTodos(JSON.parse(storedTodos));
-    } else {
-      // Se não existir (primeira vez), usa o array inicial do tarefas.json
-      setTodos(initialTodos);
-    }
-  }, []); // [] significa que roda só uma vez, no início
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        setTodos(data);
+      } catch (error) {
+        console.error('Erro ao carregar tarefas:', error);
+      }
+    };
+    fetchTodos();
+  }, []);
 
-  // useEffect para SALVAR as tarefas no localStorage toda vez que 'todos' mudar
-  useEffect(() => {
-    if (todos.length > 0) { // Só salva se houver tarefas (evita salvar vazio no início)
-      localStorage.setItem('todos', JSON.stringify(todos)); // Converte para JSON e salva
+  const addTodo = async (text, category) => {
+    const newTodo = { text, category, isCompleted: false };
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTodo),
+      });
+      const addedTodo = await response.json();
+      setTodos([...todos, addedTodo]);
+    } catch (error) {
+      console.error('Erro ao adicionar tarefa:', error);
     }
-  }, [todos]); // Roda toda vez que 'todos' é atualizado
-
-  const addTodo = (text, category) => {
-    const newTodos = [
-      ...todos,
-      {
-        id: Math.floor(Math.random() * 1000), // Gera ID aleatório
-        text,
-        category,
-        isCompleted: false,
-      },
-    ];
-    setTodos(newTodos); // Atualiza estado (e o useEffect salva automaticamente)
   };
 
-  const removeTodo = (id) => {
-    const newTodos = todos.filter(todo => todo.id !== id); // Filtra removendo o ID
-    setTodos(newTodos); // Atualiza (salva auto)
+  const removeTodo = async (id) => {
+    try {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      setTodos(todos.filter(todo => todo.id !== id));
+    } catch (error) {
+      console.error('Erro ao remover tarefa:', error);
+    }
   };
 
-  const completeTodo = (id) => {
-    const newTodos = todos.map(todo => 
-      todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
-    ); // Corrigi para usar === e retornar um novo objeto
-    setTodos(newTodos); // Atualiza (salva auto)
+  const completeTodo = async (id) => {
+    const todoToUpdate = todos.find(todo => todo.id === id);
+    const updatedTodo = { ...todoToUpdate, isCompleted: !todoToUpdate.isCompleted };
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTodo),
+      });
+      const data = await response.json();
+      setTodos(todos.map(todo => todo.id === id ? data : todo));
+    } catch (error) {
+      console.error('Erro ao completar tarefa:', error);
+    }
   };
 
   return (
     <div className='app'>
       <h1>Lista de Tarefas</h1>
+       <TodoForm addTodo={addTodo} />
       <Search search={search} setSearch={setSearch} />
       <Filter filter={filter} setFilter={setFilter} setSort={setSort} />
       <div className="todo-list">
         {todos
           .filter((todo) => filter === "All" ? true : filter === "Completed" ? todo.isCompleted : !todo.isCompleted)
-          .filter((todo) => todo.text.toLowerCase().includes(search.toLowerCase())) // Corrigi toLocaleLowerCase para toLowerCase (simples)
+          .filter((todo) => todo.text.toLowerCase().includes(search.toLowerCase()))
           .sort((a, b) => sort === 'Asc' ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text))
           .map((todo) => (
             <Todo key={todo.id} todo={todo} removeTodo={removeTodo} completeTodo={completeTodo} />
           ))}
       </div>
-      <TodoForm addTodo={addTodo} />
+    
     </div>
   );
 }
