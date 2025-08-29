@@ -22,7 +22,6 @@ Aplicação web para gerenciamento de tarefas pessoais, permitindo criar, comple
 
 - Node.js (v14+)
 - npm
-- Navegador moderno (ex.: Chrome, Firefox)
 
 ## Configuração do Projeto
 
