@@ -24,7 +24,7 @@ Aplicação web para gerenciamento de tarefas pessoais, permitindo criar, comple
 - npm
 - Navegador moderno (ex.: Chrome, Firefox)
 
-## ⚙️ Configuração do Projeto
+## Configuração do Projeto
 
 Para rodar o projeto completo (backend + frontend), siga os passos abaixo:
 
